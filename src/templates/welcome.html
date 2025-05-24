@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Sharp Pocket!</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f5fd;
+            color: #000000CC;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo img {
+            height: 60px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: #000000;
+            letter-spacing: 0.5px;
+        }
+        .content {
+            color: #000000CC;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .primary-button {
+            display: inline-block;
+            background-color: #000000CC;
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .primary-button:hover {
+            background-color: #000000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        .secondary-button {
+            display: inline-block;
+            background-color: white;
+            color: #000000CC;
+            text-decoration: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+            border: 2px solid #D9D3F1;
+            text-align: center;
+        }
+        .secondary-button:hover {
+            background-color: #f7f5fd;
+            transform: translateY(-2px);
+        }
+        .feature-box {
+            display: flex;
+            margin: 25px 0;
+            align-items: flex-start;
+        }
+        .feature-icon {
+            background-color: #D9D3F1;
+            border-radius: 50%;
+            min-width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #000000CC;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .feature-text {
+            flex: 1;
+        }
+        .feature-text h3 {
+            margin: 0 0 5px 0;
+            color: #000000;
+            font-size: 18px;
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .divider {
+            height: 1px;
+            background-color: #D9D3F1;
+            margin: 30px 0;
+        }
+        .help-section {
+            background-color: #f7f5fd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        .help-section h3 {
+            margin-top: 0;
+            color: #000000;
+        }
+        .footer {
+            text-align: center;
+            color: #6d6d6d;
+            font-size: 14px;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #D9D3F1;
+        }
+        @media only screen and (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 25px;
+            }
+            .feature-box {
+                flex-direction: column;
+                text-align: center;
+            }
+            .feature-icon {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <!-- Replace with actual logo -->
+            <img src="/api/placeholder/400/320" alt="Sharp Pocket Logo">
+        </div>
+        
+        <div class="header">
+            <h1>Welcome to Sharp Pocket!</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hello {{userName}},</p>
+            
+            <p>Thank you for joining Sharp Pocket! Your account is now active, and you can start using our services right away. We're excited to have you as part of our community.</p>
+            
+            <div class="feature-box">
+                <div class="feature-icon">💸</div>
+                <div class="feature-text">
+                    <h3>Pay Bills</h3>
+                    <p>Easily pay for your cable TV subscriptions, DSTV, and more with just a few clicks. No more standing in long queues or dealing with service interruptions.</p>
+                </div>
+            </div>
+            
+            <div class="feature-box">
+                <div class="feature-icon">📱</div>
+                <div class="feature-text">
+                    <h3>Buy Airtime & Data</h3>
+                    <p>Recharge your phone credit and purchase data bundles instantly. Our platform offers competitive rates and instant delivery to all major networks.</p>
+                </div>
+            </div>
+            
+            <div class="feature-box">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-text">
+                    <h3>Buy Electricity</h3>
+                    <p>Power your home in just a few clicks. Purchase electricity tokens 24/7 and receive them instantly via email or SMS. Never be left in the dark again.</p>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <p style="font-weight: bold; font-size: 18px; text-align: center;">Ready to get started?</p>
+                <a href="{{dashboardLink}}" class="primary-button">Go to Dashboard</a>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="help-section">
+                <h3>Need Help Getting Started?</h3>
+                <p>Our support team is available to assist you with any questions you might have about using Sharp Pocket.</p>
+                <a href="{{helpCenterLink}}" class="secondary-button">Visit Help Center</a>
+            </div>
+            
+            <p style="text-align: center; margin-top: 30px;">We're constantly working to improve and add new features to make managing your payments easier. Stay tuned for updates!</p>
+            
+            <p style="text-align: center; font-style: italic; margin-top: 20px;">The Sharp Pocket Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>Need assistance? Contact our support team</p>
+            <p>Email: <a href="mailto:support@sharppocket.com" style="color: #000000CC; text-decoration: underline;">support@sharppocket.com</a></p>
+            <p>&copy; 2025 Sharp Pocket. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,9 @@
+export const  ReferralAmount = 100
+export const ReferralDiscountPercent = 1
+export const MinimumForReferralDiscount = 10000
+export const MinimumForWithdrawal = 100
+export const WithdrawalFee = 100
+export const MinimumForBillPayment = 100
+export const BillPaymentFee = 10
+export const MinimumForWalletTopup = 100
+export const WalletTopupFee = 10
