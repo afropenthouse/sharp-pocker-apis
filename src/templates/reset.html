@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Sharp Pocket Password</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f5fd;
+            color: #000000CC;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo img {
+            height: 60px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: #000000;
+            letter-spacing: 0.5px;
+        }
+        .content {
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .verification-code {
+            background-color: #D9D3F1;
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            color: #000000CC;
+            margin: 30px auto;
+            text-align: center;
+            max-width: 280px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .button {
+            display: inline-block;
+            background-color: #000000CC;
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #000000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        .divider {
+            height: 1px;
+            background-color: #D9D3F1;
+            margin: 30px 0;
+        }
+        .security-box {
+            background-color: #f7f5fd;
+            border-left: 4px solid #D9D3F1;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+            text-align: left;
+        }
+        .security-box h3 {
+            margin-top: 0;
+            color: #000000;
+            font-size: 18px;
+        }
+        .security-box ul {
+            margin: 15px 0 5px 0;
+            padding-left: 20px;
+        }
+        .security-box li {
+            margin-bottom: 8px;
+        }
+        .footer {
+            text-align: center;
+            color: #6d6d6d;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        .timer {
+            display: inline-block;
+            background-color: #D9D3F1;
+            color: #000000CC;
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 4px;
+            margin: 0 5px;
+        }
+        @media only screen and (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 25px;
+            }
+            .verification-code {
+                font-size: 24px;
+                letter-spacing: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <!-- Replace with actual logo -->
+            <img src="/api/placeholder/400/320" alt="Sharp Pocket Logo">
+        </div>
+        
+        <div class="header">
+            <h1>Reset Your Password</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hello,</p>
+            
+            <p>We received a request to reset your Sharp Pocket account password. Please use the code below to verify your identity:</p>
+            
+            <div class="verification-code">{{otp}}</div>
+            
+            <p>This code will expire in <span class="timer">10 minutes</span>.</p>
+            
+            <p>Enter this code on the password reset page to create a new password for your account.</p>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="security-box">
+            <h3>Account Security Tips:</h3>
+            <ul>
+                <li>Create a strong password that includes letters, numbers, and special characters.</li>
+                <li>Never share your password or verification code with anyone.</li>
+                <li>Consider changing your password regularly for enhanced security.</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Important:</strong> If you didn't request this password reset, please ignore this email or contact our support team immediately as someone may be trying to access your account.</p>
+        </div>
+        
+        <div class="footer">
+            <p>Need help? Contact our support team</p>
+            <p>Email: <a href="mailto:support@sharppocket.com" style="color: #000000CC; text-decoration: underline;">support@sharppocket.com</a></p>
+            <p>&copy; 2025 Sharp Pocket. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

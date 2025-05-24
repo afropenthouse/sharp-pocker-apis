@@ -1,0 +1,168 @@
+generator client {
+  provider        = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String          @id @default(uuid())
+  email               String          @unique()
+  phoneNumber         String?
+  firstName           String?
+  lastName            String?
+  password            String
+  isOnboarded         Boolean         @default(false)
+  isMailVerified      Boolean         @default(false)
+  hasCreatedPin       Boolean         @default(false)
+  pin                 String?
+  referralCode        String?         @unique()
+  profileImage        String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  wallet              UserWallet?
+  verificationOTP     VerificationOTP[]
+  billTransactions    BillTransaction[]
+  sessions            Session[]
+  referrals           User[]          @relation("UserToUser")
+  referredBy          User?           @relation("UserToUser", fields: [referredById], references: [id])
+  referredById        String?
+  transactions        Transactions[]
+  notifications       Notifications[]
+}
+
+model UserWallet {
+  id                     String   @id @default(uuid())
+  user                   User     @relation(fields: [userId], references: [id])
+  userId                 String   @unique()
+  balance                Float    @default(0.0)
+  referralBalance        Float    @default(0.0)
+  walletRef              String
+  lastWithdrawalAt       DateTime?
+  lastDepositedAt        DateTime?
+  virtualAccountNumber   String?
+  virtualAccountBankName String?
+  virtualAccountCreatedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+model BillTransaction {
+  id             String      @id @default(uuid())
+  user           User        @relation(fields: [userId], references: [id])
+  userId         String
+  serviceType    SERVICE_TYPE
+  provider       String
+  accountNumber  String?
+  phoneNumber    String?
+  amount         Float
+  status         BILL_STATUS @default(PENDING)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  transaction    Transactions? @relation(fields: [transactionId], references: [id])
+  transactionId  String?     @unique
+}
+
+model Transactions {
+  id                  String       @id @default(uuid())
+  user                User         @relation(fields: [userId], references: [id])
+  userId              String
+  txRef               String       @unique()
+  amount              Float
+  status              TRANSACTION_STATUS @default(SUCCESS)
+  type                TRANSACTION_TYPE
+  description         TRANSACTION_DESCRIPTION
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  billTransaction     BillTransaction?
+}
+
+model Session {
+  id                String   @id @default(uuid())
+  user              User     @relation(fields: [userId], references: [id])
+  userId            String
+  accessToken       String
+  refreshToken      String
+  deviceFingerPrint String
+  expiredAt         DateTime
+  createdAt         DateTime @default(now())
+}
+
+model VerificationOTP {
+  id          String   @id @default(uuid())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  otpCode     String
+  type        VERIFICATION_TYPE
+  createdAt   DateTime @default(now())
+  expiredTime DateTime
+}
+
+
+enum SERVICE_TYPE {
+  AIRTIME
+  DATA
+  ELECTRICITY
+  CABLE
+  OTHER
+}
+
+enum BILL_STATUS {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum VERIFICATION_TYPE {
+  MAIL_VERIFICATION
+  RESET_PASSWORD
+}
+
+enum TRANSACTION_TYPE {
+  CREDIT
+  DEBIT
+  REFERRAL
+  BILL_PAYMENT
+  TOPUP
+}
+
+enum TRANSACTION_STATUS {
+  SUCCESS
+  PENDING
+  FAILED
+}
+
+enum TRANSACTION_DESCRIPTION {
+  REFERRAL_BONUS
+  BILL_PAYMENT
+  WALLET_TOPUP
+  REFERRAL_PAYMENT
+  OUTWARD_WITHDRAWAL
+  IN_APP_TRANSFER
+  REFUND
+}
+model Notifications {
+  id          String           @id @unique() @default(uuid())
+  user        User             @relation(fields: [userId], references: [id])
+  userId      String
+  type        NOTIFICATION_TYPE @default(BILL_PAYMENT)
+  createdAt   DateTime         @default(now())
+  content     String
+
+}
+model ErrorLogs{
+    id                  String                 @id @unique() @default(uuid())
+    txRef String
+    logs String
+    createdAt             DateTime               @default(now())
+}
+enum NOTIFICATION_TYPE {
+  WALLET
+  BILL_PAYMENT
+  WALLET_TOPUP
+  REFUND
+}
