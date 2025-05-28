@@ -30,7 +30,7 @@ export async function signUpValidation(
       lastName: Joi.string().min(1).max(30).required(),
       email: Joi.string().email().required(),
       password: Joi.string().min(8).required(),
-      referralCode: Joi.string().optional()
+      referralCode: Joi.string().allow('').optional()
     });
   
     const validation = completeProfileSchema.validate(req.body);
