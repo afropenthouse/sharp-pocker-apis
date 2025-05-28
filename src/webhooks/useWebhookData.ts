@@ -99,7 +99,7 @@ export const updateWithdrawalTransaction = async (
     }
   }
 };
-
+  
 export const updateCashwyreWithDrawalTransaction = async (dataFromWebhook:CashwyrePayoutEvent) =>{
   const ref = dataFromWebhook["eventData"].reference
   
