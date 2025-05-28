@@ -12,7 +12,7 @@ export const SignUpMail = async ({to,name,otp}:{to:string,name:string,otp:string
         port:587,
         secure: false,
         auth:{
-            user:process.env.EMAIL_USER ,
+            user:process.env.EMAIL_USER,
             pass:process.env.EMAIL_PASSWORD
         }
         })
