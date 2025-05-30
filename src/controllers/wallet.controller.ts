@@ -475,6 +475,8 @@ export const withdrawToExternalBankCashwyre = catchAuthError(async(req,res,next)
 
   const paymentStatus = await initiateCashwyrePayout(bankCode, accountName, accountNumber, amount, transaction.txRef)
 
+  console.log(paymentStatus, "app-console");
+
   if(!paymentStatus){
     await prismaClient.transactions.update({
       where:{id:transaction.id},
@@ -489,16 +491,9 @@ export const withdrawToExternalBankCashwyre = catchAuthError(async(req,res,next)
           where:{id:transaction.id},
           data:{status:TRANSACTION_STATUS.FAILED}
       })
-
       return ResponseHandler.sendErrorResponse({res,error:"payment could not be completed, try again"})
   } else {
-    await prismaClient.transactions.update({
-      where:{id:transaction.id},
-      data:{status:TRANSACTION_STATUS.SUCCESS}
-    })
-  }
-
-  await prismaClient.userWallet.update({
+    await prismaClient.userWallet.update({
       where:{userId},
       data:{
           balance:{
@@ -506,7 +501,6 @@ export const withdrawToExternalBankCashwyre = catchAuthError(async(req,res,next)
           }
       }
   })
-
-  return ResponseHandler.sendSuccessResponse({res,message:`payment of NGN ${amount} is been processed`})
-
-})
+  }
+ return ResponseHandler.sendSuccessResponse({res,message:`payment of NGN ${amount} is been processed`})
+}) 

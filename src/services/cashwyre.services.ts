@@ -258,7 +258,7 @@ export const initiateCashwyrePayout = async (
   try {
     const response = await axios.post(reqUrl, data,  {
       headers: {
-        Authorization: `Bearer ${process.env.CASHWYREPUBLICKEY}`
+        Authorization: `Bearer ${process.env.CASHWYRESECRETKEY}`
       }
     });
     return response.data; 

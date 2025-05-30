@@ -287,7 +287,7 @@ var initiateCashwyrePayout = function (bankCode, accountName, accountNumber, amo
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, axios_1.default.post(reqUrl, data, {
                         headers: {
-                            Authorization: "Bearer ".concat(process.env.CASHWYREPUBLICKEY)
+                            Authorization: "Bearer ".concat(process.env.CASHWYRESECRETKEY)
                         }
                     })];
             case 2:

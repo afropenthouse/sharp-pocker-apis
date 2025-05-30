@@ -133,7 +133,6 @@ export const updateCashwyreWithDrawalTransaction = async (dataFromWebhook:Cashwy
       data: { status: TRANSACTION_STATUS.FAILED },
     });
 
-    // Fetch user + wallet for refund
     const transactionData = await prismaClient.transactions.findFirst({
       where: { id: transaction.id },
       include: {

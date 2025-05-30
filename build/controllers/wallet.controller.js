@@ -527,6 +527,7 @@ exports.withdrawToExternalBankCashwyre = (0, wrapper_1.catchAuthError)(function 
                 return [4 /*yield*/, (0, cashwyre_services_1.initiateCashwyrePayout)(bankCode, accountName, accountNumber, amount, transaction.txRef)];
             case 4:
                 paymentStatus = _d.sent();
+                console.log(paymentStatus, "app-console");
                 if (!!paymentStatus) return [3 /*break*/, 6];
                 return [4 /*yield*/, pris_client_1.default.transactions.update({
                         where: { id: transaction.id },
@@ -544,14 +545,7 @@ exports.withdrawToExternalBankCashwyre = (0, wrapper_1.catchAuthError)(function 
             case 7:
                 _d.sent();
                 return [2 /*return*/, response_handler_1.default.sendErrorResponse({ res: res, error: "payment could not be completed, try again" })];
-            case 8: return [4 /*yield*/, pris_client_1.default.transactions.update({
-                    where: { id: transaction.id },
-                    data: { status: client_1.TRANSACTION_STATUS.SUCCESS }
-                })];
-            case 9:
-                _d.sent();
-                _d.label = 10;
-            case 10: return [4 /*yield*/, pris_client_1.default.userWallet.update({
+            case 8: return [4 /*yield*/, pris_client_1.default.userWallet.update({
                     where: { userId: userId },
                     data: {
                         balance: {
@@ -559,9 +553,10 @@ exports.withdrawToExternalBankCashwyre = (0, wrapper_1.catchAuthError)(function 
                         }
                     }
                 })];
-            case 11:
+            case 9:
                 _d.sent();
-                return [2 /*return*/, response_handler_1.default.sendSuccessResponse({ res: res, message: "payment of NGN ".concat(amount, " is been processed") })];
+                _d.label = 10;
+            case 10: return [2 /*return*/, response_handler_1.default.sendSuccessResponse({ res: res, message: "payment of NGN ".concat(amount, " is been processed") })];
         }
     });
 }); });
