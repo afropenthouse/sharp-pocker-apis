@@ -39,25 +39,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyEmailValidation = verifyEmailValidation;
-exports.signUpValidation = signUpValidation;
-exports.forgotPasswordValidation = forgotPasswordValidation;
-exports.loginValidation = loginValidation;
-exports.refreshTokenValidation = refreshTokenValidation;
-exports.passwordResetValidation = passwordResetValidation;
-exports.createPinValidation = createPinValidation;
-exports.resendVerificationCodeValidation = resendVerificationCodeValidation;
+exports.verifySmartCardValidation = verifySmartCardValidation;
+exports.buyAirtimeValidation = buyAirtimeValidation;
+exports.buyCableTvValidation = buyCableTvValidation;
+exports.buyDataValidation = buyDataValidation;
+exports.buyElectricityValidation = buyElectricityValidation;
+exports.verifyElectricityValidation = verifyElectricityValidation;
 var joi_1 = __importDefault(require("joi"));
 var response_handler_1 = __importDefault(require("../utils/response-handler"));
-function verifyEmailValidation(req, res, next) {
+function verifySmartCardValidation(req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var emailSchema, validation, error;
+        var smartCardSchema, validation, error;
         return __generator(this, function (_a) {
-            emailSchema = joi_1.default.object({
-                verificationId: joi_1.default.string().required(),
-                otpCode: joi_1.default.string().length(4).required()
+            smartCardSchema = joi_1.default.object({
+                smartCardNumber: joi_1.default.string().required(),
+                providerCode: joi_1.default.string().required(),
+                providerPlanCode: joi_1.default.string().required()
             });
-            validation = emailSchema.validate(req.body);
+            validation = smartCardSchema.validate(req.body);
             if (validation.error) {
                 error = validation.error.message ? validation.error.message : validation.error.details[0].message;
                 return [2 /*return*/, response_handler_1.default.sendErrorResponse({ res: res, code: 400, error: error })];
@@ -66,36 +65,16 @@ function verifyEmailValidation(req, res, next) {
         });
     });
 }
-function signUpValidation(req, res, next) {
+function buyAirtimeValidation(req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var completeProfileSchema, validation, error;
+        var airtimeSchema, validation, error;
         return __generator(this, function (_a) {
-            completeProfileSchema = joi_1.default.object({
-                firstName: joi_1.default.string().min(1).max(30).required(),
-                lastName: joi_1.default.string().min(1).max(30).required(),
-                email: joi_1.default.string().email().required(),
-                password: joi_1.default.string().min(8).required(),
-                referralCode: joi_1.default.string().allow('').optional()
+            airtimeSchema = joi_1.default.object({
+                network: joi_1.default.string().required(),
+                phoneNumber: joi_1.default.string().required(),
+                amount: joi_1.default.number().required()
             });
-            validation = completeProfileSchema.validate(req.body);
-            if (validation.error) {
-                error = validation.error.message
-                    ? validation.error.message
-                    : validation.error.details[0].message;
-                return [2 /*return*/, response_handler_1.default.sendErrorResponse({ res: res, code: 400, error: error })];
-            }
-            return [2 /*return*/, next()];
-        });
-    });
-}
-function forgotPasswordValidation(req, res, next) {
-    return __awaiter(this, void 0, void 0, function () {
-        var resetSchema, validation, error;
-        return __generator(this, function (_a) {
-            resetSchema = joi_1.default.object({
-                email: joi_1.default.string().email().required(),
-            });
-            validation = resetSchema.validate(req.body);
+            validation = airtimeSchema.validate(req.body);
             if (validation.error) {
                 error = validation.error.message ? validation.error.message : validation.error.details[0].message;
                 return [2 /*return*/, response_handler_1.default.sendErrorResponse({ res: res, code: 400, error: error })];
@@ -104,15 +83,18 @@ function forgotPasswordValidation(req, res, next) {
         });
     });
 }
-function loginValidation(req, res, next) {
+function buyCableTvValidation(req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var loginSchema, validation, error;
+        var cableTvSchema, validation, error;
         return __generator(this, function (_a) {
-            loginSchema = joi_1.default.object({
-                email: joi_1.default.string().email().required(),
-                password: joi_1.default.string().min(8).required(),
+            cableTvSchema = joi_1.default.object({
+                customerName: joi_1.default.string().required(),
+                providerCode: joi_1.default.string().required(),
+                providerPlanCode: joi_1.default.string().required(),
+                smartCardNumber: joi_1.default.string().required(),
+                amount: joi_1.default.number().required()
             });
-            validation = loginSchema.validate(req.body);
+            validation = cableTvSchema.validate(req.body);
             if (validation.error) {
                 error = validation.error.message ? validation.error.message : validation.error.details[0].message;
                 return [2 /*return*/, response_handler_1.default.sendErrorResponse({ res: res, code: 400, error: error })];
@@ -121,14 +103,17 @@ function loginValidation(req, res, next) {
         });
     });
 }
-function refreshTokenValidation(req, res, next) {
+function buyDataValidation(req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var loginSchema, validation, error;
+        var dataSchema, validation, error;
         return __generator(this, function (_a) {
-            loginSchema = joi_1.default.object({
-                refreshToken: joi_1.default.string().min(8).required(),
+            dataSchema = joi_1.default.object({
+                providerPlanCode: joi_1.default.string().required(),
+                network: joi_1.default.string().required(),
+                phoneNumber: joi_1.default.string().required(),
+                amount: joi_1.default.number().required()
             });
-            validation = loginSchema.validate(req.body);
+            validation = dataSchema.validate(req.body);
             if (validation.error) {
                 error = validation.error.message ? validation.error.message : validation.error.details[0].message;
                 return [2 /*return*/, response_handler_1.default.sendErrorResponse({ res: res, code: 400, error: error })];
@@ -137,16 +122,18 @@ function refreshTokenValidation(req, res, next) {
         });
     });
 }
-function passwordResetValidation(req, res, next) {
+function buyElectricityValidation(req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var resetSchema, validation, error;
+        var electricitySchema, validation, error;
         return __generator(this, function (_a) {
-            resetSchema = joi_1.default.object({
-                verificationId: joi_1.default.string().required(),
-                otpCode: joi_1.default.string().length(4).required(),
-                password: joi_1.default.string().min(8).required()
+            electricitySchema = joi_1.default.object({
+                providerCode: joi_1.default.string().required(),
+                providerPlanCode: joi_1.default.string().required(),
+                meterNumber: joi_1.default.string().required(),
+                amount: joi_1.default.number().required(),
+                customerName: joi_1.default.string().required()
             });
-            validation = resetSchema.validate(req.body);
+            validation = electricitySchema.validate(req.body);
             if (validation.error) {
                 error = validation.error.message ? validation.error.message : validation.error.details[0].message;
                 return [2 /*return*/, response_handler_1.default.sendErrorResponse({ res: res, code: 400, error: error })];
@@ -155,31 +142,16 @@ function passwordResetValidation(req, res, next) {
         });
     });
 }
-function createPinValidation(req, res, next) {
+function verifyElectricityValidation(req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var loginSchema, validation, error;
+        var electricitySchema, validation, error;
         return __generator(this, function (_a) {
-            loginSchema = joi_1.default.object({
-                pin: joi_1.default.string().length(4).required(),
+            electricitySchema = joi_1.default.object({
+                providerPlanCode: joi_1.default.string().required(),
+                providerCode: joi_1.default.string().required(),
+                meterNumber: joi_1.default.string().required()
             });
-            validation = loginSchema.validate(req.body);
-            if (validation.error) {
-                error = validation.error.message ? validation.error.message : validation.error.details[0].message;
-                return [2 /*return*/, response_handler_1.default.sendErrorResponse({ res: res, code: 400, error: error })];
-            }
-            return [2 /*return*/, next()];
-        });
-    });
-}
-function resendVerificationCodeValidation(req, res, next) {
-    return __awaiter(this, void 0, void 0, function () {
-        var resendSchema, validation, error;
-        return __generator(this, function (_a) {
-            resendSchema = joi_1.default.object({
-                email: joi_1.default.string().required(),
-                verificationType: joi_1.default.string().valid('MAIL_VERIFICATION', 'RESET_PASSWORD').required()
-            });
-            validation = resendSchema.validate(req.body);
+            validation = electricitySchema.validate(req.body);
             if (validation.error) {
                 error = validation.error.message ? validation.error.message : validation.error.details[0].message;
                 return [2 /*return*/, response_handler_1.default.sendErrorResponse({ res: res, code: 400, error: error })];

@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initiateCashwyrePayout = exports.getDataOptions = exports.getAirtimeOptions = exports.getCableOptions = exports.getElectricityOptions = exports.initiatePayout = exports.accountLookup = exports.getBankCodes = void 0;
+exports.verifyElectricity = exports.buyElectricity = exports.buyData = exports.buyCableTv = exports.verifySmartCard = exports.buyAirtime = exports.initiateCashwyrePayout = exports.getDataOptions = exports.getAirtimeOptions = exports.getCableOptions = exports.getElectricityOptions = exports.initiatePayout = exports.accountLookup = exports.getBankCodes = void 0;
 var axios_1 = __importDefault(require("axios"));
 var uuid_1 = require("uuid");
 var getBankCodes = function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -302,3 +302,212 @@ var initiateCashwyrePayout = function (bankCode, accountName, accountNumber, amo
     });
 }); };
 exports.initiateCashwyrePayout = initiateCashwyrePayout;
+var buyAirtime = function (_a) { return __awaiter(void 0, [_a], void 0, function (_b) {
+    var reqUrl, requestId, reference, data, response, err_9;
+    var Network = _b.Network, PhoneNumber = _b.PhoneNumber, Amount = _b.Amount;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                reqUrl = "https://businessapi.cashwyre.com/api/v1.0/Airtime/buyAirtime";
+                requestId = (0, uuid_1.v4)();
+                reference = (0, uuid_1.v4)();
+                data = {
+                    appId: process.env.CASHWYREAPPID,
+                    requestId: requestId,
+                    country: "NG",
+                    businessCode: process.env.CASHWYREBUSINESSCODE,
+                    Network: Network,
+                    PhoneNumber: PhoneNumber,
+                    Amount: Amount,
+                    Reference: reference
+                };
+                _c.label = 1;
+            case 1:
+                _c.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, axios_1.default.post(reqUrl, data)];
+            case 2:
+                response = _c.sent();
+                return [2 /*return*/, response.data]; // Returning the response data
+            case 3:
+                err_9 = _c.sent();
+                console.error("Error fetching bank codes:", err_9);
+                return [2 /*return*/, null]; // Return null in case of error
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.buyAirtime = buyAirtime;
+var verifySmartCard = function (_a) { return __awaiter(void 0, [_a], void 0, function (_b) {
+    var reqUrl, requestId, data, response, err_10;
+    var SmartCardNumber = _b.SmartCardNumber, ProviderCode = _b.ProviderCode, ProviderPlanCode = _b.ProviderPlanCode;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                reqUrl = "https://businessapi.cashwyre.com/api/v1.0/CableTV/verifyCustomer";
+                requestId = (0, uuid_1.v4)();
+                data = {
+                    appId: process.env.CASHWYREAPPID,
+                    requestId: requestId,
+                    country: "NG",
+                    businessCode: process.env.CASHWYREBUSINESSCODE,
+                    SmartCardNumber: SmartCardNumber,
+                    ProviderCode: ProviderCode,
+                    ProviderPlanCode: ProviderPlanCode
+                };
+                _c.label = 1;
+            case 1:
+                _c.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, axios_1.default.post(reqUrl, data)];
+            case 2:
+                response = _c.sent();
+                return [2 /*return*/, response.data]; // Returning the response data
+            case 3:
+                err_10 = _c.sent();
+                console.error("Error fetching bank codes:", err_10);
+                return [2 /*return*/, null]; // Return null in case of error
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.verifySmartCard = verifySmartCard;
+var buyCableTv = function (_a) { return __awaiter(void 0, [_a], void 0, function (_b) {
+    var reqUrl, requestId, reference, data, response, err_11;
+    var CustomerName = _b.CustomerName, ProviderCode = _b.ProviderCode, ProviderPlanCode = _b.ProviderPlanCode, SmartCardNumber = _b.SmartCardNumber;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                reqUrl = "https://businessapi.cashwyre.com/api/v1.0/CableTV/buyCableTV";
+                requestId = (0, uuid_1.v4)();
+                reference = (0, uuid_1.v4)();
+                data = {
+                    appId: process.env.CASHWYREAPPID,
+                    requestId: requestId,
+                    country: "NG",
+                    businessCode: process.env.CASHWYREBUSINESSCODE,
+                    CustomerName: CustomerName,
+                    ProviderCode: ProviderCode,
+                    ProviderPlanCode: ProviderPlanCode,
+                    SmartCardNumber: SmartCardNumber,
+                    Reference: reference
+                };
+                _c.label = 1;
+            case 1:
+                _c.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, axios_1.default.post(reqUrl, data)];
+            case 2:
+                response = _c.sent();
+                return [2 /*return*/, response.data]; // Returning the response data
+            case 3:
+                err_11 = _c.sent();
+                console.error("Error fetching bank codes:", err_11);
+                return [2 /*return*/, null]; // Return null in case of error
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.buyCableTv = buyCableTv;
+var buyData = function (_a) { return __awaiter(void 0, [_a], void 0, function (_b) {
+    var reqUrl, requestId, reference, data, response, err_12;
+    var ProviderPlanCode = _b.ProviderPlanCode, Network = _b.Network, PhoneNumber = _b.PhoneNumber;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                reqUrl = "https://businessapi.cashwyre.com/api/v1.0/DataPurchase/buyData";
+                requestId = (0, uuid_1.v4)();
+                reference = (0, uuid_1.v4)();
+                data = {
+                    appId: process.env.CASHWYREAPPID,
+                    requestId: requestId,
+                    country: "NG",
+                    businessCode: process.env.CASHWYREBUSINESSCODE,
+                    Network: Network,
+                    PhoneNumber: PhoneNumber,
+                    ProviderPlanCode: ProviderPlanCode,
+                    Reference: reference
+                };
+                _c.label = 1;
+            case 1:
+                _c.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, axios_1.default.post(reqUrl, data)];
+            case 2:
+                response = _c.sent();
+                return [2 /*return*/, response.data]; // Returning the response data
+            case 3:
+                err_12 = _c.sent();
+                console.error("Error fetching bank codes:", err_12);
+                return [2 /*return*/, null]; // Return null in case of error
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.buyData = buyData;
+var buyElectricity = function (_a) { return __awaiter(void 0, [_a], void 0, function (_b) {
+    var reqUrl, requestId, reference, data, response, err_13;
+    var ProviderCode = _b.ProviderCode, ProviderPlanCode = _b.ProviderPlanCode, MeterNumber = _b.MeterNumber, Amount = _b.Amount, CustomerName = _b.CustomerName;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                reqUrl = "https://businessapi.cashwyre.com/api/v1.0/Electricity/buyElectricity";
+                requestId = (0, uuid_1.v4)();
+                reference = (0, uuid_1.v4)();
+                data = {
+                    appId: process.env.CASHWYREAPPID,
+                    requestId: requestId,
+                    country: "NG",
+                    businessCode: process.env.CASHWYREBUSINESSCODE,
+                    ProviderCode: ProviderCode,
+                    ProviderPlanCode: ProviderPlanCode,
+                    MeterNumber: MeterNumber,
+                    Amount: Amount,
+                    CustomerName: CustomerName,
+                    Reference: reference
+                };
+                _c.label = 1;
+            case 1:
+                _c.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, axios_1.default.post(reqUrl, data)];
+            case 2:
+                response = _c.sent();
+                return [2 /*return*/, response.data]; // Returning the response data
+            case 3:
+                err_13 = _c.sent();
+                console.error("Error fetching bank codes:", err_13);
+                return [2 /*return*/, null]; // Return null in case of error
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.buyElectricity = buyElectricity;
+var verifyElectricity = function (_a) { return __awaiter(void 0, [_a], void 0, function (_b) {
+    var reqUrl, requestId, data, response, err_14;
+    var MeterNumber = _b.MeterNumber, ProviderCode = _b.ProviderCode, ProviderPlanCode = _b.ProviderPlanCode;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                reqUrl = "https://businessapi.cashwyre.com/api/v1.0/Electricity/verifyCustomer";
+                requestId = (0, uuid_1.v4)();
+                data = {
+                    appId: process.env.CASHWYREAPPID,
+                    requestId: requestId,
+                    country: "NG",
+                    businessCode: process.env.CASHWYREBUSINESSCODE,
+                    MeterNumber: MeterNumber,
+                    ProviderCode: ProviderCode,
+                    ProviderPlanCode: ProviderPlanCode
+                };
+                _c.label = 1;
+            case 1:
+                _c.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, axios_1.default.post(reqUrl, data)];
+            case 2:
+                response = _c.sent();
+                return [2 /*return*/, response.data]; // Returning the response data
+            case 3:
+                err_14 = _c.sent();
+                console.error("Error fetching bank codes:", err_14);
+                return [2 /*return*/, null]; // Return null in case of error
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.verifyElectricity = verifyElectricity;

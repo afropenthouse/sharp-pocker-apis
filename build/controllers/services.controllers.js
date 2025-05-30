@@ -39,10 +39,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDataOption = exports.getElectricityOption = exports.getCableOption = exports.getAirtimeOption = void 0;
+exports.verifyElectricityController = exports.verifySmartCardController = exports.buyElectricityController = exports.buyDataController = exports.buyCableTvController = exports.buyAirtimeController = exports.getDataOption = exports.getElectricityOption = exports.getCableOption = exports.getAirtimeOption = void 0;
+var client_1 = require("@prisma/client");
+var client_2 = require("@prisma/client");
+var client_3 = require("@prisma/client");
 var wrapper_1 = require("../middlewares/wrapper");
+var pris_client_1 = __importDefault(require("../prisma/pris-client"));
 var cashwyre_services_1 = require("../services/cashwyre.services");
 var response_handler_1 = __importDefault(require("../utils/response-handler"));
+var transaction_utiles_1 = require("../utils/transaction.utiles");
 exports.getAirtimeOption = (0, wrapper_1.catchAuthError)(function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var airtimeOptions;
     return __generator(this, function (_a) {
@@ -57,7 +62,10 @@ exports.getAirtimeOption = (0, wrapper_1.catchAuthError)(function (req, res, nex
                             code: 500,
                         })];
                 }
-                return [2 /*return*/, response_handler_1.default.sendSuccessResponse({ res: res, data: airtimeOptions.data })];
+                return [2 /*return*/, response_handler_1.default.sendSuccessResponse({
+                        res: res,
+                        data: airtimeOptions.data,
+                    })];
         }
     });
 }); });
@@ -93,7 +101,10 @@ exports.getElectricityOption = (0, wrapper_1.catchAuthError)(function (req, res,
                             code: 500,
                         })];
                 }
-                return [2 /*return*/, response_handler_1.default.sendSuccessResponse({ res: res, data: electricityOptions.data })];
+                return [2 /*return*/, response_handler_1.default.sendSuccessResponse({
+                        res: res,
+                        data: electricityOptions.data,
+                    })];
         }
     });
 }); });
@@ -112,6 +123,422 @@ exports.getDataOption = (0, wrapper_1.catchAuthError)(function (req, res, next) 
                         })];
                 }
                 return [2 /*return*/, response_handler_1.default.sendSuccessResponse({ res: res, data: dataOptions.data })];
+        }
+    });
+}); });
+exports.buyAirtimeController = (0, wrapper_1.catchAuthError)(function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, _a, amount, network, phoneNumber, userWallet, airtime;
+    var _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.userId;
+                _a = req.body, amount = _a.amount, network = _a.network, phoneNumber = _a.phoneNumber;
+                if (!userId) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "server error",
+                            code: 500,
+                        })];
+                }
+                return [4 /*yield*/, pris_client_1.default.userWallet.findFirst({
+                        where: {
+                            userId: userId,
+                        },
+                    })];
+            case 1:
+                userWallet = _c.sent();
+                if (!userWallet) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "Wallet not created yet, set up profile",
+                            status_code: "COMPLETE_PROFILE",
+                        })];
+                }
+                if (userWallet.balance < amount) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "Insufficient funds in wallet",
+                        })];
+                }
+                return [4 /*yield*/, (0, cashwyre_services_1.buyAirtime)({ Network: network, PhoneNumber: phoneNumber, Amount: amount })];
+            case 2:
+                airtime = _c.sent();
+                console.log("cashwyre response: ".concat(JSON.stringify(airtime)));
+                if (!airtime.success) return [3 /*break*/, 6];
+                return [4 /*yield*/, pris_client_1.default.userWallet.update({
+                        where: { userId: userId },
+                        data: { balance: { decrement: amount } },
+                    })];
+            case 3:
+                _c.sent();
+                return [4 /*yield*/, pris_client_1.default.transactions.create({
+                        data: {
+                            txRef: (0, transaction_utiles_1.generateTransactionRef)(),
+                            status: client_1.TRANSACTION_STATUS.SUCCESS,
+                            userId: userId,
+                            description: client_2.TRANSACTION_DESCRIPTION.BILL_PAYMENT,
+                            amount: amount,
+                            type: client_3.TRANSACTION_TYPE.DEBIT,
+                            billTransaction: {
+                                create: {
+                                    serviceType: client_1.SERVICE_TYPE.AIRTIME,
+                                    provider: network,
+                                    phoneNumber: phoneNumber,
+                                    status: client_1.BILL_STATUS.SUCCESS,
+                                    amount: amount,
+                                    user: {
+                                        connect: {
+                                            id: userId,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    })];
+            case 4:
+                _c.sent();
+                return [4 /*yield*/, pris_client_1.default.notifications.create({
+                        data: {
+                            userId: userId,
+                            content: "Airtime purchase of ".concat(amount, " to ").concat(phoneNumber, " was successful"),
+                            type: client_1.NOTIFICATION_TYPE.BILL_PAYMENT,
+                        },
+                    })];
+            case 5:
+                _c.sent();
+                return [2 /*return*/, response_handler_1.default.sendSuccessResponse({ res: res, data: airtime.data })];
+            case 6: return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                    res: res,
+                    error: "airtime purchase failed",
+                })];
+        }
+    });
+}); });
+exports.buyCableTvController = (0, wrapper_1.catchAuthError)(function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, _a, customerName, providerCode, providerPlanCode, smartCardNumber, amount, userWallet, cableTv;
+    var _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.userId;
+                _a = req.body, customerName = _a.customerName, providerCode = _a.providerCode, providerPlanCode = _a.providerPlanCode, smartCardNumber = _a.smartCardNumber, amount = _a.amount;
+                if (!userId) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "server error",
+                            code: 500,
+                        })];
+                }
+                return [4 /*yield*/, pris_client_1.default.userWallet.findFirst({
+                        where: {
+                            userId: userId,
+                        },
+                    })];
+            case 1:
+                userWallet = _c.sent();
+                if (!userWallet) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "Wallet not created yet, set up profile",
+                            status_code: "COMPLETE_PROFILE",
+                        })];
+                }
+                if (userWallet.balance < amount) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "Insufficient funds in wallet",
+                        })];
+                }
+                return [4 /*yield*/, (0, cashwyre_services_1.buyCableTv)({ CustomerName: customerName, ProviderCode: providerCode, ProviderPlanCode: providerPlanCode, SmartCardNumber: smartCardNumber })];
+            case 2:
+                cableTv = _c.sent();
+                if (!cableTv.success) return [3 /*break*/, 6];
+                return [4 /*yield*/, pris_client_1.default.userWallet.update({
+                        where: { userId: userId },
+                        data: { balance: { decrement: amount } },
+                    })];
+            case 3:
+                _c.sent();
+                return [4 /*yield*/, pris_client_1.default.transactions.create({
+                        data: {
+                            txRef: (0, transaction_utiles_1.generateTransactionRef)(),
+                            status: client_1.TRANSACTION_STATUS.SUCCESS,
+                            userId: userId,
+                            description: client_2.TRANSACTION_DESCRIPTION.BILL_PAYMENT,
+                            amount: amount,
+                            type: client_3.TRANSACTION_TYPE.DEBIT,
+                            billTransaction: {
+                                create: {
+                                    serviceType: client_1.SERVICE_TYPE.CABLE,
+                                    provider: providerCode,
+                                    status: client_1.BILL_STATUS.SUCCESS,
+                                    amount: amount,
+                                    user: {
+                                        connect: {
+                                            id: userId,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    })];
+            case 4:
+                _c.sent();
+                return [4 /*yield*/, pris_client_1.default.notifications.create({
+                        data: {
+                            userId: userId,
+                            content: "Cable TV purchase of ".concat(amount, " to ").concat(smartCardNumber, " was successful"),
+                            type: client_1.NOTIFICATION_TYPE.BILL_PAYMENT,
+                        },
+                    })];
+            case 5:
+                _c.sent();
+                return [2 /*return*/, response_handler_1.default.sendSuccessResponse({ res: res, data: cableTv.data })];
+            case 6: return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                    res: res,
+                    error: "cable tv purchase failed",
+                })];
+        }
+    });
+}); });
+exports.buyDataController = (0, wrapper_1.catchAuthError)(function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, _a, amount, network, phoneNumber, providerPlanCode, userWallet, data;
+    var _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.userId;
+                _a = req.body, amount = _a.amount, network = _a.network, phoneNumber = _a.phoneNumber, providerPlanCode = _a.providerPlanCode;
+                if (!userId) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "server error",
+                            code: 500,
+                        })];
+                }
+                return [4 /*yield*/, pris_client_1.default.userWallet.findFirst({
+                        where: {
+                            userId: userId,
+                        },
+                    })];
+            case 1:
+                userWallet = _c.sent();
+                if (!userWallet) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "Wallet not created yet, set up profile",
+                            status_code: "COMPLETE_PROFILE",
+                        })];
+                }
+                if (userWallet.balance < amount) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "Insufficient funds in wallet",
+                        })];
+                }
+                return [4 /*yield*/, (0, cashwyre_services_1.buyData)({ Network: network, PhoneNumber: phoneNumber, ProviderPlanCode: providerPlanCode })];
+            case 2:
+                data = _c.sent();
+                console.log("cashwyre response: ".concat(JSON.stringify(data)));
+                if (!data.success) return [3 /*break*/, 6];
+                return [4 /*yield*/, pris_client_1.default.userWallet.update({
+                        where: { userId: userId },
+                        data: { balance: { decrement: amount } },
+                    })];
+            case 3:
+                _c.sent();
+                return [4 /*yield*/, pris_client_1.default.transactions.create({
+                        data: {
+                            txRef: (0, transaction_utiles_1.generateTransactionRef)(),
+                            status: client_1.TRANSACTION_STATUS.SUCCESS,
+                            userId: userId,
+                            description: client_2.TRANSACTION_DESCRIPTION.BILL_PAYMENT,
+                            amount: amount,
+                            type: client_3.TRANSACTION_TYPE.DEBIT,
+                            billTransaction: {
+                                create: {
+                                    serviceType: client_1.SERVICE_TYPE.DATA,
+                                    provider: network,
+                                    status: client_1.BILL_STATUS.SUCCESS,
+                                    amount: amount,
+                                    user: {
+                                        connect: {
+                                            id: userId,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    })];
+            case 4:
+                _c.sent();
+                return [4 /*yield*/, pris_client_1.default.notifications.create({
+                        data: {
+                            userId: userId,
+                            content: "Data purchase of ".concat(amount, " to ").concat(phoneNumber, " was successful"),
+                            type: client_1.NOTIFICATION_TYPE.BILL_PAYMENT,
+                        },
+                    })];
+            case 5:
+                _c.sent();
+                return [2 /*return*/, response_handler_1.default.sendSuccessResponse({ res: res, data: data.data })];
+            case 6: return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                    res: res,
+                    error: "data purchase failed",
+                })];
+        }
+    });
+}); });
+exports.buyElectricityController = (0, wrapper_1.catchAuthError)(function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, _a, amount, providerCode, providerPlanCode, meterNumber, customerName, userWallet, electricity;
+    var _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.userId;
+                _a = req.body, amount = _a.amount, providerCode = _a.providerCode, providerPlanCode = _a.providerPlanCode, meterNumber = _a.meterNumber, customerName = _a.customerName;
+                if (!userId) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "server error",
+                            code: 500,
+                        })];
+                }
+                return [4 /*yield*/, pris_client_1.default.userWallet.findFirst({
+                        where: {
+                            userId: userId,
+                        },
+                    })];
+            case 1:
+                userWallet = _c.sent();
+                if (!userWallet) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "Wallet not created yet, set up profile",
+                            status_code: "COMPLETE_PROFILE",
+                        })];
+                }
+                if (userWallet.balance < amount) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "Insufficient funds in wallet",
+                        })];
+                }
+                return [4 /*yield*/, (0, cashwyre_services_1.buyElectricity)({ ProviderCode: providerCode, ProviderPlanCode: providerPlanCode, MeterNumber: meterNumber, Amount: amount, CustomerName: customerName })];
+            case 2:
+                electricity = _c.sent();
+                console.log("cashwyre response: ".concat(JSON.stringify(electricity)));
+                if (!electricity.success) return [3 /*break*/, 6];
+                return [4 /*yield*/, pris_client_1.default.userWallet.update({
+                        where: { userId: userId },
+                        data: { balance: { decrement: amount } },
+                    })];
+            case 3:
+                _c.sent();
+                return [4 /*yield*/, pris_client_1.default.transactions.create({
+                        data: {
+                            txRef: (0, transaction_utiles_1.generateTransactionRef)(),
+                            status: client_1.TRANSACTION_STATUS.SUCCESS,
+                            userId: userId,
+                            description: client_2.TRANSACTION_DESCRIPTION.BILL_PAYMENT,
+                            amount: amount,
+                            type: client_3.TRANSACTION_TYPE.DEBIT,
+                            billTransaction: {
+                                create: {
+                                    serviceType: client_1.SERVICE_TYPE.ELECTRICITY,
+                                    provider: providerCode,
+                                    status: client_1.BILL_STATUS.SUCCESS,
+                                    amount: amount,
+                                    user: {
+                                        connect: {
+                                            id: userId,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    })];
+            case 4:
+                _c.sent();
+                return [4 /*yield*/, pris_client_1.default.notifications.create({
+                        data: {
+                            userId: userId,
+                            content: "Electricity purchase of ".concat(amount, " to ").concat(meterNumber, " was successful"),
+                            type: client_1.NOTIFICATION_TYPE.BILL_PAYMENT,
+                        },
+                    })];
+            case 5:
+                _c.sent();
+                return [2 /*return*/, response_handler_1.default.sendSuccessResponse({ res: res, data: electricity.data })];
+            case 6: return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                    res: res,
+                    error: electricity.message,
+                })];
+        }
+    });
+}); });
+exports.verifySmartCardController = (0, wrapper_1.catchAuthError)(function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, _a, smartCardNumber, providerCode, providerPlanCode, smartCard;
+    var _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.userId;
+                _a = req.body, smartCardNumber = _a.smartCardNumber, providerCode = _a.providerCode, providerPlanCode = _a.providerPlanCode;
+                if (!userId) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "server error",
+                            code: 500,
+                        })];
+                }
+                return [4 /*yield*/, (0, cashwyre_services_1.verifySmartCard)({ SmartCardNumber: smartCardNumber, ProviderCode: providerCode, ProviderPlanCode: providerPlanCode })];
+            case 1:
+                smartCard = _c.sent();
+                console.log("cashwyre response: ".concat(JSON.stringify(smartCard)));
+                if (smartCard.success) {
+                    return [2 /*return*/, response_handler_1.default.sendSuccessResponse({ res: res, data: smartCard.data })];
+                }
+                else {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "smart card verification failed",
+                        })];
+                }
+                return [2 /*return*/];
+        }
+    });
+}); });
+exports.verifyElectricityController = (0, wrapper_1.catchAuthError)(function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, _a, providerCode, providerPlanCode, meterNumber, electricity;
+    var _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.userId;
+                _a = req.body, providerCode = _a.providerCode, providerPlanCode = _a.providerPlanCode, meterNumber = _a.meterNumber;
+                if (!userId) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "server error",
+                            code: 500,
+                        })];
+                }
+                return [4 /*yield*/, (0, cashwyre_services_1.verifyElectricity)({ ProviderCode: providerCode, ProviderPlanCode: providerPlanCode, MeterNumber: meterNumber })];
+            case 1:
+                electricity = _c.sent();
+                console.log("cashwyre response: ".concat(JSON.stringify(electricity)));
+                if (electricity.success) {
+                    return [2 /*return*/, response_handler_1.default.sendSuccessResponse({ res: res, data: electricity.data })];
+                }
+                else {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "electricity verification failed",
+                        })];
+                }
+                return [2 /*return*/];
         }
     });
 }); });
