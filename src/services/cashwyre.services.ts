@@ -267,3 +267,221 @@ export const initiateCashwyrePayout = async (
     return null;
   }
 };
+
+export const buyAirtime = async ({
+  Network,
+  PhoneNumber,
+  Amount
+}:{
+  Network:string,
+  PhoneNumber:string,
+  Amount:number
+}) => {
+  const reqUrl = "https://businessapi.cashwyre.com/api/v1.0/Airtime/buyAirtime";
+  
+  // Generating a unique requestId using uuid
+  const requestId = uuidv4(); 
+  const reference = uuidv4();
+
+ 
+  const data = {
+    appId: process.env.CASHWYREAPPID,           
+    requestId: requestId,                
+    country: "NG",                       
+    businessCode: process.env.CASHWYREBUSINESSCODE, 
+    Network,
+    PhoneNumber,
+    Amount,
+    Reference: reference
+  };
+
+  try {
+    const response = await axios.post(reqUrl, data); // Sending POST request with data
+    return response.data; // Returning the response data
+  } catch (err) {
+    console.error("Error fetching bank codes:", err);
+    return null; // Return null in case of error
+  }
+};
+
+export const verifySmartCard = async ({
+  SmartCardNumber,
+  ProviderCode,
+  ProviderPlanCode
+}:{
+  SmartCardNumber:string,
+  ProviderCode:string,
+  ProviderPlanCode:string
+}) => {
+  const reqUrl = "https://businessapi.cashwyre.com/api/v1.0/CableTV/verifyCustomer";
+  
+  // Generating a unique requestId using uuid
+  const requestId = uuidv4(); 
+
+ 
+  const data = {
+    appId: process.env.CASHWYREAPPID,           
+    requestId: requestId,                
+    country: "NG",                       
+    businessCode: process.env.CASHWYREBUSINESSCODE, 
+    SmartCardNumber,
+    ProviderCode,
+    ProviderPlanCode
+  };
+
+  try {
+    const response = await axios.post(reqUrl, data); // Sending POST request with data
+    return response.data; // Returning the response data
+  } catch (err) {
+    console.error("Error fetching bank codes:", err);
+    return null; // Return null in case of error
+  }
+};
+
+export const buyCableTv = async ({
+  CustomerName,
+  ProviderCode,
+  ProviderPlanCode,
+  SmartCardNumber
+}:{
+  CustomerName:string,
+  ProviderCode:string,
+  ProviderPlanCode:string,
+  SmartCardNumber:string
+}) => {
+  const reqUrl = "https://businessapi.cashwyre.com/api/v1.0/CableTV/buyCableTV";
+  
+  // Generating a unique requestId using uuid
+  const requestId = uuidv4(); 
+  const reference = uuidv4();
+
+ 
+  const data = {
+    appId: process.env.CASHWYREAPPID,           
+    requestId: requestId,                
+    country: "NG",                       
+    businessCode: process.env.CASHWYREBUSINESSCODE, 
+    CustomerName,
+    ProviderCode,
+    ProviderPlanCode,
+    SmartCardNumber,
+    Reference: reference
+  };
+
+  try {
+    const response = await axios.post(reqUrl, data); // Sending POST request with data
+    return response.data; // Returning the response data
+  } catch (err) {
+    console.error("Error fetching bank codes:", err);
+    return null; // Return null in case of error
+  }
+};
+
+export const buyData = async ({
+  ProviderPlanCode,
+  Network,
+  PhoneNumber,
+}:{
+  Network:string,
+  PhoneNumber:string,
+  ProviderPlanCode:string
+}) => {
+  const reqUrl = "https://businessapi.cashwyre.com/api/v1.0/DataPurchase/buyData";
+  
+  // Generating a unique requestId using uuid
+  const requestId = uuidv4(); 
+  const reference = uuidv4();
+ 
+  const data = {
+    appId: process.env.CASHWYREAPPID,           
+    requestId: requestId,                
+    country: "NG",                       
+    businessCode: process.env.CASHWYREBUSINESSCODE, 
+    Network,
+    PhoneNumber,
+    ProviderPlanCode,
+    Reference: reference
+  };
+
+  try {
+    const response = await axios.post(reqUrl, data); // Sending POST request with data
+    return response.data; // Returning the response data
+  } catch (err) {
+    console.error("Error fetching bank codes:", err);
+    return null; // Return null in case of error
+  }
+};
+
+export const buyElectricity = async ({
+  ProviderCode,
+  ProviderPlanCode,
+  MeterNumber,
+  Amount,
+  CustomerName
+}:{
+  ProviderCode:string,
+  ProviderPlanCode:string,
+  MeterNumber:string,
+  Amount:number,
+  CustomerName:string
+}) => {
+  const reqUrl = "https://businessapi.cashwyre.com/api/v1.0/Electricity/buyElectricity";
+  
+  // Generating a unique requestId using uuid
+  const requestId = uuidv4(); 
+  const reference = uuidv4();
+
+  const data = {
+    appId: process.env.CASHWYREAPPID,           
+    requestId: requestId,                 
+    country: "NG",                       
+    businessCode: process.env.CASHWYREBUSINESSCODE, 
+    ProviderCode,
+    ProviderPlanCode,
+    MeterNumber,
+    Amount,
+    CustomerName,
+    Reference: reference
+  };  
+
+  try {
+    const response = await axios.post(reqUrl, data); // Sending POST request with data
+    return response.data; // Returning the response data
+  } catch (err) {
+    console.error("Error fetching bank codes:", err);
+    return null; // Return null in case of error
+  }
+};
+
+export const verifyElectricity = async ({
+  MeterNumber,
+  ProviderCode,
+  ProviderPlanCode
+}:{
+  MeterNumber:string,
+  ProviderCode:string,
+  ProviderPlanCode:string
+}) => {
+  const reqUrl = "https://businessapi.cashwyre.com/api/v1.0/Electricity/verifyCustomer";
+  
+  // Generating a unique requestId using uuid
+  const requestId = uuidv4(); 
+
+  const data = {
+    appId: process.env.CASHWYREAPPID,           
+    requestId: requestId,                
+    country: "NG",                       
+    businessCode: process.env.CASHWYREBUSINESSCODE, 
+    MeterNumber,
+    ProviderCode,
+    ProviderPlanCode
+  };
+
+  try {
+    const response = await axios.post(reqUrl, data); // Sending POST request with data
+    return response.data; // Returning the response data
+  } catch (err) {
+    console.error("Error fetching bank codes:", err);
+    return null; // Return null in case of error
+  }
+};

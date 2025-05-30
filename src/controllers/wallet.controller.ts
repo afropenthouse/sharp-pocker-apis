@@ -475,15 +475,27 @@ export const withdrawToExternalBankCashwyre = catchAuthError(async(req,res,next)
 
   const paymentStatus = await initiateCashwyrePayout(bankCode, accountName, accountNumber, amount, transaction.txRef)
 
-  console.log(paymentStatus,"app-console")
-
   if(!paymentStatus){
+    await prismaClient.transactions.update({
+      where:{id:transaction.id},
+      data:{status:TRANSACTION_STATUS.FAILED}
+    })
+
+    return ResponseHandler.sendErrorResponse({res,error:"payment could not be completed, try again"})
+  }
+
+  if(!paymentStatus.success){
       await prismaClient.transactions.update({
           where:{id:transaction.id},
           data:{status:TRANSACTION_STATUS.FAILED}
       })
 
       return ResponseHandler.sendErrorResponse({res,error:"payment could not be completed, try again"})
+  } else {
+    await prismaClient.transactions.update({
+      where:{id:transaction.id},
+      data:{status:TRANSACTION_STATUS.SUCCESS}
+    })
   }
 
   await prismaClient.userWallet.update({
