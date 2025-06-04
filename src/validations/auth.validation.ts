@@ -30,6 +30,7 @@ export async function signUpValidation(
       lastName: Joi.string().min(1).max(30).required(),
       email: Joi.string().email().required(),
       password: Joi.string().min(8).required(),
+      phoneNumber: Joi.string().min(10).max(15).required(),
       referralCode: Joi.string().allow('').optional()
     });
   

@@ -52,12 +52,12 @@ var constants_config_1 = require("../config/constants.config");
 var transaction_utiles_1 = require("../utils/transaction.utiles");
 var client_1 = require("@prisma/client");
 exports.userSignUp = (0, wrapper_1.catchDefaultError)(function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, firstName, lastName, email, password, referralCode, userEmail, existingUser, hashedPassword, newUserId, referredById, referringUser, walletUpdate, transaction, notification, newUser, _b, _c, otpCode, otpObject;
+    var _a, firstName, lastName, email, password, referralCode, phoneNumber, userEmail, existingUser, hashedPassword, newUserId, referredById, referringUser, walletUpdate, transaction, notification, newUser, _b, _c, otpCode, otpObject;
     var _d, _e;
     return __generator(this, function (_f) {
         switch (_f.label) {
             case 0:
-                _a = req.body, firstName = _a.firstName, lastName = _a.lastName, email = _a.email, password = _a.password, referralCode = _a.referralCode;
+                _a = req.body, firstName = _a.firstName, lastName = _a.lastName, email = _a.email, password = _a.password, referralCode = _a.referralCode, phoneNumber = _a.phoneNumber;
                 userEmail = email.toLowerCase();
                 return [4 /*yield*/, pris_client_1.default.user.findFirst({
                         where: { email: userEmail },
@@ -116,6 +116,7 @@ exports.userSignUp = (0, wrapper_1.catchDefaultError)(function (req, res, next) 
                     email: userEmail,
                     firstName: firstName,
                     lastName: lastName,
+                    phoneNumber: phoneNumber,
                     password: hashedPassword
                 };
                 return [4 /*yield*/, (0, token_utils_1.generateReferralCode)()];

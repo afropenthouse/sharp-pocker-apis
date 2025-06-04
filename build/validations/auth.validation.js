@@ -75,6 +75,7 @@ function signUpValidation(req, res, next) {
                 lastName: joi_1.default.string().min(1).max(30).required(),
                 email: joi_1.default.string().email().required(),
                 password: joi_1.default.string().min(8).required(),
+                phoneNumber: joi_1.default.string().min(10).max(15).required(),
                 referralCode: joi_1.default.string().allow('').optional()
             });
             validation = completeProfileSchema.validate(req.body);

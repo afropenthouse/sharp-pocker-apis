@@ -12,7 +12,7 @@ import { generateTransactionRef } from "../utils/transaction.utiles";
 import { NOTIFICATION_TYPE, TRANSACTION_DESCRIPTION, TRANSACTION_TYPE } from "@prisma/client";
 
 export const userSignUp = catchDefaultError(async (req, res, next) => {
-  const { firstName, lastName, email, password, referralCode }: ISignUpBody = req.body;
+  const { firstName, lastName, email, password, referralCode, phoneNumber }: ISignUpBody = req.body;
 
   const userEmail = email.toLowerCase();
 
@@ -77,6 +77,7 @@ export const userSignUp = catchDefaultError(async (req, res, next) => {
         email: userEmail,
         firstName,
         lastName,
+        phoneNumber,
         password: hashedPassword,
         referralCode: await generateReferralCode(), 
         referredById,
