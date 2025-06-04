@@ -12,6 +12,7 @@
     "prisma:studio": "prisma studio --schema=src/prisma/schema.prisma",
     "prisma:generate": "prisma generate --schema=src/prisma/schema.prisma",
     "prisma:pull": "prisma db pull --schema=src/prisma/schema.prisma",
+    "prisma:reset": "npx prisma db push --force-reset --schema=src/prisma/schema.prisma",
     "start": "node build/index.js"
   },
   "keywords": [],

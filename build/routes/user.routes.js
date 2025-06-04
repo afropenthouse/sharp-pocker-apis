@@ -8,4 +8,5 @@ var user_controller_1 = require("../controllers/user.controller");
 var verifyAccessToken_1 = require("../middlewares/verifyAccessToken");
 var userRoutes = express_1.default.Router();
 userRoutes.route("/profile").get(verifyAccessToken_1.verifyAccessToken, user_controller_1.getUserProfileDetail);
+userRoutes.route("/notifications").get(verifyAccessToken_1.verifyAccessToken, user_controller_1.getUserNotifications);
 exports.default = userRoutes;

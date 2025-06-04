@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserProfileDetail = void 0;
+exports.getUserNotifications = exports.getUserProfileDetail = void 0;
 var wrapper_1 = require("../middlewares/wrapper");
 var pris_client_1 = __importDefault(require("../prisma/pris-client"));
 var response_handler_1 = __importDefault(require("../utils/response-handler"));
@@ -81,6 +81,61 @@ exports.getUserProfileDetail = (0, wrapper_1.catchAuthError)(function (req, res,
             case 2:
                 profile = _b.sent();
                 return [2 /*return*/, response_handler_1.default.sendSuccessResponse({ res: res, data: profile })];
+        }
+    });
+}); });
+exports.getUserNotifications = (0, wrapper_1.catchAuthError)(function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var user, _a, _b, page, _c, limit, skip, _d, notifications, totalCount, totalPages;
+    var _e;
+    return __generator(this, function (_f) {
+        switch (_f.label) {
+            case 0: return [4 /*yield*/, pris_client_1.default.user.findFirst({
+                    where: { id: (_e = req.user) === null || _e === void 0 ? void 0 : _e.userId },
+                })];
+            case 1:
+                user = _f.sent();
+                if (!user) {
+                    return [2 /*return*/, response_handler_1.default.sendErrorResponse({
+                            res: res,
+                            error: "User does not exist",
+                            code: 400,
+                        })];
+                }
+                _a = req.query, _b = _a.page, page = _b === void 0 ? 1 : _b, _c = _a.limit, limit = _c === void 0 ? 20 : _c;
+                skip = (Number(page) - 1) * Number(limit);
+                return [4 /*yield*/, Promise.all([
+                        pris_client_1.default.notifications.findMany({
+                            where: { userId: user.id },
+                            orderBy: { createdAt: 'desc' },
+                            skip: skip,
+                            take: Number(limit),
+                            select: {
+                                id: true,
+                                type: true,
+                                content: true,
+                                createdAt: true,
+                            },
+                        }),
+                        pris_client_1.default.notifications.count({
+                            where: { userId: user.id },
+                        }),
+                    ])];
+            case 2:
+                _d = _f.sent(), notifications = _d[0], totalCount = _d[1];
+                totalPages = Math.ceil(totalCount / Number(limit));
+                return [2 /*return*/, response_handler_1.default.sendSuccessResponse({
+                        res: res,
+                        data: {
+                            notifications: notifications,
+                            pagination: {
+                                currentPage: Number(page),
+                                totalPages: totalPages,
+                                totalCount: totalCount,
+                                hasNextPage: Number(page) < totalPages,
+                                hasPreviousPage: Number(page) > 1,
+                            },
+                        },
+                    })];
         }
     });
 }); });
