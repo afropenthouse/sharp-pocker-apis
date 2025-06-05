@@ -26,6 +26,7 @@ export const getUserProfileDetail = catchAuthError(async (req, res, next) => {
       isMailVerified: true,
       referralCode: true,
       hasCreatedPin: true,
+      phoneNumber: true,
       _count: {
         select: {
           referrals: true,

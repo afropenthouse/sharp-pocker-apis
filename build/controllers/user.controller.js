@@ -71,6 +71,7 @@ exports.getUserProfileDetail = (0, wrapper_1.catchAuthError)(function (req, res,
                             isMailVerified: true,
                             referralCode: true,
                             hasCreatedPin: true,
+                            phoneNumber: true,
                             _count: {
                                 select: {
                                     referrals: true,
