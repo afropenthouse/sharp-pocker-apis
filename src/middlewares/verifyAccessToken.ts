@@ -40,7 +40,7 @@ export async function verifyAccessToken  (req:IExpressRequest,res:Response,next:
         const user = session.user
         req.user = {
             userId:user.id,
-            email:user.id,
+            email:user.email,
             firstName:user.firstName || ""  ,
             lastName:user.lastName || "",
             phoneNumber:user.phoneNumber || "",
