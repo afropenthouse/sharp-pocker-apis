@@ -1,3 +1,4 @@
+import { calculateSimilarity } from './../utils/wallet.utils';
 import { catchAuthError } from "../middlewares/wrapper";
 import prismaClient from "../prisma/pris-client";
 import ResponseHandler from "../utils/response-handler";
@@ -20,11 +21,20 @@ import {
   TRANSACTION_STATUS,
   TRANSACTION_TYPE,
 } from "@prisma/client";
-import { getBankCodes, initiateCashwyrePayout } from "../services/cashwyre.services";
+import { getBankCodes, initiateCashwyrePayout, verifyNIN } from "../services/cashwyre.services";
 
 export const createVirtualAccountNumber = catchAuthError(
   async (req, res, next) => {
-    const { bvn, pin }: IWalletDepositBody = req.body;
+    const { nin, pin }: { nin: string; pin: string } = req.body;
+
+    // Validate NIN format - must be exactly 11 digits
+    if (!nin || !/^\d{11}$/.test(nin)) {
+      return ResponseHandler.sendErrorResponse({
+        res,
+        error: "NIN must be exactly 11 digits",
+        code: 400
+      });
+    }
 
     const user = await prismaClient.user.findFirst({
       where: { id: req.user?.userId },
@@ -74,13 +84,57 @@ export const createVirtualAccountNumber = catchAuthError(
       });
     }
 
+    // Verify NIN with Cashwyre
+    const ninVerification = await verifyNIN({ NIN: nin });
+
+    if (!ninVerification || !ninVerification.success) {
+      return ResponseHandler.sendErrorResponse({
+        res,
+        error: "NIN verification failed. Please check your NIN and try again",
+        code: 400
+      });
+    }
+
+    // Extract names from NIN verification response
+    const { firstName: ninFirstName, lastName: ninLastName } = ninVerification.data;
+    
+    // Combine NIN names (handle missing middle name)
+    const ninFullName = `${ninFirstName} ${ninLastName}`.trim();
+    
+    // Combine user profile names
+    const userFullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+
+    if (!userFullName || userFullName.length < 2) {
+      return ResponseHandler.sendErrorResponse({
+        res,
+        error: "Please complete your profile with valid first name and last name",
+        code: 400
+      });
+    }
+
+    // Calculate name similarity
+    const similarity = calculateSimilarity(ninFullName, userFullName);
+    
+    console.log(`Name matching: NIN: "${ninFullName}" vs Profile: "${userFullName}" - Similarity: ${similarity.toFixed(2)}%`);
+
+    // Check if similarity meets minimum threshold (40%)
+    if (similarity < 40) {
+      return ResponseHandler.sendErrorResponse({
+        res,
+        error: "The name on your NIN does not match your profile name sufficiently. Please ensure your profile name matches your NIN",
+        code: 400
+      });
+    }
+
     // create virtual account number
     const virtualAccountDetails = await createVirtualAccount({
-      bvn,
+      bvn: nin, // Using NIN in place of BVN for the virtual account creation
       tx_ref: userWallet.walletRef,
       email: user.email,
       narration: user.firstName || "",
     });
+
+    console.log(virtualAccountDetails, "virtual account details");
 
     if (!virtualAccountDetails) {
       return ResponseHandler.sendErrorResponse({
@@ -105,10 +159,13 @@ export const createVirtualAccountNumber = catchAuthError(
     return ResponseHandler.sendSuccessResponse({
       res,
       message: "Virtual Account successfully created",
-      data: updatedWallet,
+      data: {
+        ...updatedWallet,
+        nameMatchPercentage: similarity.toFixed(2)
+      },
     });
   }
-);
+);  
 
 export const createPin = catchAuthError(async (req, res, next) => {
   const { pin }: IPinCreateBody = req.body;
@@ -260,7 +317,7 @@ export const withdrawToExternalBank = catchAuthError(async (req, res, next) => {
     narration: "withdrawal",
   });
 
-  console.log(paymentStatus, "app-console");
+  // console.log(paymentStatus, "app-console");
 
   if (!paymentStatus) {
     await prismaClient.transactions.update({
@@ -475,7 +532,7 @@ export const withdrawToExternalBankCashwyre = catchAuthError(async(req,res,next)
 
   const paymentStatus = await initiateCashwyrePayout(bankCode, accountName, accountNumber, amount, transaction.txRef)
 
-  console.log(paymentStatus, "app-console");
+  // console.log(paymentStatus, "app-console");
 
   if(!paymentStatus){
     await prismaClient.transactions.update({
@@ -504,3 +561,14 @@ export const withdrawToExternalBankCashwyre = catchAuthError(async(req,res,next)
   }
  return ResponseHandler.sendSuccessResponse({res,message:`payment of NGN ${amount} is been processed`})
 }) 
+
+  export const verifyNINCashwyre = catchAuthError(async(req,res,next)=>{
+  const {nin}:{nin:string} = req.body
+
+  const verification = await verifyNIN({NIN:nin})
+
+  if(!verification){
+    return ResponseHandler.sendErrorResponse({res,error:"Unable to verify NIN"})
+  }
+  return ResponseHandler.sendSuccessResponse({res,data:verification})
+})

@@ -485,3 +485,29 @@ export const verifyElectricity = async ({
     return null; // Return null in case of error
   }
 };
+
+export const verifyNIN = async ({
+  NIN
+}:{
+  NIN:string
+}) => {
+  const reqUrl = "https://businessapi.cashwyre.com/api/v1.0/verify/verifyNIN";
+  const requestId = uuidv4(); 
+
+  const data = {
+    appId: process.env.CASHWYREAPPID,           
+    requestId: requestId,                
+    country: "NG",                       
+    businessCode: process.env.CASHWYREBUSINESSCODE, 
+    nin: NIN
+  };      
+
+  try {
+    const response = await axios.post(reqUrl, data); // Sending POST request with data
+      console.log(response.data)
+    return response.data; // Returning the response data
+  } catch (err) {
+    console.error("Error fetching bank codes:", err);
+    return null; // Return null in case of error
+  }
+};

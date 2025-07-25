@@ -6,7 +6,7 @@ export async function CreateVirtualWalletValidation (req:Request,
     res:Response,
     next:NextFunction):Promise<Response | void>{
     const walletSchema = Joi.object({
-        bvn: Joi.string().length(11).required(),
+        nin: Joi.string().length(11).required(),
         pin: Joi.string().length(4).required()
     });
 
